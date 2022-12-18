@@ -12,7 +12,7 @@ export const Searchbar = ({ onSubmit }) => {
         </SeachButton>
 
         <Input
-          name="search"
+          name="imageSearch"
           type="text"
           autoComplete="off"
           autoFocus

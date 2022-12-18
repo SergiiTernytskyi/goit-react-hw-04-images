@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 
-import { ModalWindow, Overlay } from './Modal.styled';
+import { Image, ModalWindow, Overlay } from './Modal.styled';
 
 const modalRoot = document.querySelector('#modal-root');
 
@@ -29,7 +29,7 @@ export function Modal({ image: { largeImageURL, tags }, onClose }) {
 
   return createPortal(
     <Overlay onClick={backdropClickHandler}>
-      <ModalWindow>{<img src={largeImageURL} alt={tags} />}</ModalWindow>
+      <ModalWindow>{<Image src={largeImageURL} alt={tags} />}</ModalWindow>
     </Overlay>,
     modalRoot
   );
