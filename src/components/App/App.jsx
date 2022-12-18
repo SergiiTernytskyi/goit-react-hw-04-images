@@ -1,10 +1,11 @@
+import { useState, useEffect } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
+
+import { getImages } from 'services/imageApi';
+import { GlobalStyle } from '../GlobalStyle';
 import { Button } from 'components/Button/Button';
 import { Error } from 'components/Error/Error';
 import { Loader } from 'components/Loader/Loader';
-import { useState, useEffect } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
-import { getImages } from 'utils/imageApi';
-import { GlobalStyle } from '../GlobalStyle';
 import { ImageGallery } from '../ImageGallery/ImageGallery';
 import { Searchbar } from '../Searchbar/Searchbar';
 import { Main } from './App.styled';
@@ -14,7 +15,6 @@ export function App() {
   const [images, setImages] = useState([]);
   const [page, setPage] = useState(1);
   const [error, setError] = useState(null);
-  const [totalImages, setTotalImages] = useState(null);
   const [showLoadMore, setShowLoadMore] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -27,7 +27,18 @@ export function App() {
       try {
         setLoading(true);
 
+        if (page === 1) {
+          setImages([]);
+        }
+
         const data = await getImages(search, page);
+
+        if (data.totalHits === 0) {
+          setImages([]);
+          setShowLoadMore(false);
+          return toast.error(`Nothing found by Your query: "${search}"`);
+        }
+
         const fetchedImages = data.hits.map(
           ({ id, tags, largeImageURL, webformatURL }) => {
             return { id, tags, largeImageURL, webformatURL };
@@ -35,7 +46,7 @@ export function App() {
         );
 
         setImages(prevState => [...prevState, ...fetchedImages]);
-        setTotalImages(data.totalHits);
+
         setShowLoadMore(page < Math.ceil(data.totalHits / 12) ? true : false);
       } catch {
         setError(`Something went wrong. Try one more time.`);
@@ -57,19 +68,18 @@ export function App() {
     }
 
     setSearch(imageSearch.value);
+    setPage(1);
+    setError(null);
 
     if (imageSearch.value === search) {
+      setShowLoadMore(false);
       return toast.error('You have entered the same value!!!');
     }
-
-    setImages([]);
-    setPage(1);
-    setTotalImages(null);
-    setShowLoadMore(false);
   };
 
   const loadMoreHandler = () => {
     setPage(prevState => prevState + 1);
+    setError(null);
   };
 
   return (
@@ -78,7 +88,6 @@ export function App() {
       <Main>
         {loading && <Loader />}
         {error && <Error>{error}</Error>}
-        {totalImages === 0 && <Error>Nothing found, nothing to show</Error>}
         {images.length > 0 && <ImageGallery images={images} />}
         {showLoadMore && <Button onClick={loadMoreHandler} />}
       </Main>

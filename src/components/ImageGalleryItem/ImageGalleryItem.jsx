@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Modal } from 'components/Modal/Modal';
 import { Item, Picture } from './ImageGalleryItem.styled';
 
-export function ImageGalleyItem({ image }) {
+export const ImageGalleryItem = ({ image }) => {
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -19,9 +19,9 @@ export function ImageGalleyItem({ image }) {
       {showModal && <Modal image={image} onClose={() => setShowModal(false)} />}
     </>
   );
-}
+};
 
-ImageGalleyItem.propTypes = {
+ImageGalleryItem.propTypes = {
   image: PropTypes.shape({
     webformatURL: PropTypes.string.isRequired,
     tags: PropTypes.string.isRequired,
